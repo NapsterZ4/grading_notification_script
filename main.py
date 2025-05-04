@@ -57,7 +57,7 @@ def read_file(file_path) -> pd.DataFrame:
     elif extension in [".xlsx", ".xls"]:
         df = pd.read_excel(file_path, engine="openpyxl")
     else:
-        raise ValueError(f"Formato not supported: {extension}")
+        raise ValueError(f"Format not supported: {extension}")
 
     return df
 
