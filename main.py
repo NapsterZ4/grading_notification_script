@@ -38,7 +38,9 @@ def generate_email_body(row, columns):
     """
     body = f"Hello,\n\nHere is your updated information about the course:\n\n"
     for column in columns:
-        if not pd.isna(row[column]):
+        if pd.isna(row[column]):
+            body += f"- {column}: no data\n"
+        else:
             body += f"- {column}: {row[column]}\n"
     body += "\nBest regards,\nJorge Zapata."
     return body
