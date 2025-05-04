@@ -3,14 +3,16 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import argparse
+import os
+
+SMTP_SERVER = "smtp.office365.com"
+SMTP_PORT = 587
 
 
 def send_email(sender_email, sender_password, recipient_email, subject, body):
     """
     Sends an email using Office 365.
     """
-    SMTP_SERVER = "smtp.office365.com"
-    SMTP_PORT = 587
 
     try:
         # Configure the email message
@@ -42,11 +44,24 @@ def generate_email_body(row, columns):
     return body
 
 
+def read_file(file_path) -> pd.DataFrame:
+    extension = os.path.splitext(file_path)[1].lower()
+
+    if extension == ".csv":
+        df = pd.read_csv(file_path)
+    elif extension in [".xlsx", ".xls"]:
+        df = pd.read_excel(file_path, engine="openpyxl")
+    else:
+        raise ValueError(f"Formato no soportado: {extension}")
+
+    return df
+
+
 def main(file_path, email_column, sender_email, sender_password):
     """
     Loads the data file and sends emails to all recipients.
     """
-    df = pd.read_excel(file_path)
+    df = read_file(file_path)
     columns = [col for col in df.columns if col != email_column]
 
     if email_column not in df.columns:
@@ -77,20 +92,24 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "file_path",
+        "--file_path",
+        required=True,
         help="Path to the file containing the data"
     )
     parser.add_argument(
-        "email_column",
+        "--email_column",
+        required=True,
         help="Name of the column containing email addresses"
     )
     parser.add_argument(
-        "sender_email",
+        "--sender_email",
+        required=True,
         help="Office 365 email address to send messages from"
     )
     parser.add_argument(
-        "sender_password",
-        help="Password for the email address"
+        "--sender_password",
+        required=True,
+        help="Password for the email (you need to use the app password)"
     )
 
     args = parser.parse_args()
