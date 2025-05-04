@@ -52,12 +52,12 @@ def read_file(file_path) -> pd.DataFrame:
     elif extension in [".xlsx", ".xls"]:
         df = pd.read_excel(file_path, engine="openpyxl")
     else:
-        raise ValueError(f"Formato no soportado: {extension}")
+        raise ValueError(f"Formato not supported: {extension}")
 
     return df
 
 
-def main(file_path, email_column, sender_email, sender_password):
+def main(file_path, email_column, sender_email, sender_password, course_name):
     """
     Loads the data file and sends emails to all recipients.
     """
@@ -75,7 +75,7 @@ def main(file_path, email_column, sender_email, sender_password):
             print(f"Skipping row {index}: no email address.")
             continue
 
-        subject = "Grading Notification"
+        subject = f"Grading Notification for {course_name}"
         body = generate_email_body(row, columns)
         send_email(
             sender_email,
@@ -111,6 +111,11 @@ if __name__ == "__main__":
         required=True,
         help="Password for the email (you need to use the app password)"
     )
+    parser.add_argument(
+        "--course_name",
+        required=True,
+        help="The name of your course"
+    )
 
     args = parser.parse_args()
 
@@ -118,5 +123,6 @@ if __name__ == "__main__":
         args.file_path,
         args.email_column,
         args.sender_email,
-        args.sender_password
+        args.sender_password,
+        args.course_name
     )
