@@ -32,7 +32,7 @@ def send_email(sender_email, sender_password, recipient_email, subject, body):
         print(f"Error sending email to {recipient_email}: {e}")
 
 
-def generate_email_body(row, columns):
+def generate_email_body(row, columns, comments):
     """
     Generates the email body with the available fields.
     """
@@ -42,7 +42,10 @@ def generate_email_body(row, columns):
             body += f"- {column}: no data\n"
         else:
             body += f"- {column}: {row[column]}\n"
-    body += "\nBest regards,\nJorge Zapata."
+
+    if comments is not None and comments != "":
+        body += f"\n{str(comments)}"
+    body += "\n\nBest regards,\nJorge Zapata."
     return body
 
 
@@ -59,7 +62,14 @@ def read_file(file_path) -> pd.DataFrame:
     return df
 
 
-def main(file_path, email_column, sender_email, sender_password, course_name):
+def main(
+        file_path,
+        email_column,
+        sender_email,
+        sender_password,
+        course_name,
+        comments
+):
     """
     Loads the data file and sends emails to all recipients.
     """
@@ -78,7 +88,7 @@ def main(file_path, email_column, sender_email, sender_password, course_name):
             continue
 
         subject = f"Grading Notification for {course_name}"
-        body = generate_email_body(row, columns)
+        body = generate_email_body(row, columns, comments)
         send_email(
             sender_email,
             sender_password,
@@ -118,6 +128,10 @@ if __name__ == "__main__":
         required=True,
         help="The name of your course"
     )
+    parser.add_argument(
+        "--comments",
+        help="The name of your course"
+    )
 
     args = parser.parse_args()
 
@@ -126,5 +140,6 @@ if __name__ == "__main__":
         args.email_column,
         args.sender_email,
         args.sender_password,
-        args.course_name
+        args.course_name,
+        args.comments
     )
