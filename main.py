@@ -130,7 +130,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--comments",
-        help="The name of your course"
+        help="If you want to add comments on the email"
     )
 
     args = parser.parse_args()
