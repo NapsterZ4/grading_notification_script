@@ -49,11 +49,11 @@ def generate_email_body(row, columns, comments):
     return body
 
 
-def read_file(file_path) -> pd.DataFrame:
+def read_file(file_path, sep=",") -> pd.DataFrame:
     extension = os.path.splitext(file_path)[1].lower()
 
     if extension == ".csv":
-        df = pd.read_csv(file_path)
+        df = pd.read_csv(file_path, sep=sep)
     elif extension in [".xlsx", ".xls"]:
         df = pd.read_excel(file_path, engine="openpyxl")
     else:
@@ -68,12 +68,13 @@ def main(
         sender_email,
         sender_password,
         course_name,
-        comments
+        comments,
+        separator=","
 ):
     """
     Loads the data file and sends emails to all recipients.
     """
-    df = read_file(file_path)
+    df = read_file(file_path, separator)
     columns = [col for col in df.columns if col != email_column]
 
     if email_column not in df.columns:
@@ -132,6 +133,11 @@ if __name__ == "__main__":
         "--comments",
         help="If you want to add comments on the email"
     )
+    parser.add_argument(
+        "--separator",
+        default=",",
+        help="Separator for the CSV file"
+    )
 
     args = parser.parse_args()
 
@@ -141,5 +147,6 @@ if __name__ == "__main__":
         args.sender_email,
         args.sender_password,
         args.course_name,
-        args.comments
+        args.comments,
+        args.separator
     )
